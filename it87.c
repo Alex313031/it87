@@ -349,10 +349,10 @@ struct it87_devices {
 	u32 features;
 	u8 num_temp_limit;
 	u8 num_temp_offset;
-	u8 num_temp_map;  /* Number of temperature sources for pwm */
+	u8 num_temp_map;	/* Number of temperature sources for pwm */
 	u8 peci_mask;
 	u8 old_peci_mask;
-	u8 smbus_bitmap;  /* SMBus enable bits in extra config register */
+	u8 smbus_bitmap;	/* SMBus enable bits in extra config register */
 	u8 ec_special_config;
 };
 
@@ -374,21 +374,21 @@ struct it87_devices {
 #define FEAT_PWM_FREQ2		BIT(16)	/* Separate pwm freq 2 */
 #define FEAT_SIX_TEMP		BIT(17)	/* Up to 6 temp sensors */
 #define FEAT_VIN3_5V		BIT(18)	/* VIN3 connected to +5V */
-#define FEAT_FOUR_FANS		BIT(19)	/* Supports four fans */
-#define FEAT_FOUR_PWM		BIT(20)	/* Supports four fan controls */
-#define FEAT_BANK_SEL		BIT(21)	/* Chip has multi-bank support */
-#define FEAT_FANCTL_ONOFF	BIT(23)	/* chip has FAN_CTL ON/OFF */
-#define FEAT_11MV_ADC		BIT(24)
-#define FEAT_NEW_TEMPMAP	BIT(25)	/* new temp input selection */
-#define FEAT_MMIO		BIT(26)	/* Chip supports MMIO */
-#define FEAT_FOUR_TEMP		BIT(27)
 /*
  * Disabling configuration mode on some chips can result in system
  * hang-ups and access failures to the Super-IO chip at the
  * second SIO address. Never exit configuration mode on these
  * chips to avoid the problem.
  */
-#define FEAT_CONF_NOEXIT	BIT(28)	/* Chip should not exit conf mode */
+#define FEAT_CONF_NOEXIT	BIT(19)	/* Chip should not exit conf mode */
+#define FEAT_FOUR_FANS		BIT(20)	/* Supports four fans */
+#define FEAT_FOUR_PWM		BIT(21)	/* Supports four fan controls */
+#define FEAT_FOUR_TEMP		BIT(22)
+#define FEAT_FANCTL_ONOFF	BIT(23)	/* chip has FAN_CTL ON/OFF */
+#define FEAT_NEW_TEMPMAP	BIT(24)	/* new temp input selection */
+#define FEAT_BANK_SEL		BIT(25)	/* Chip has multi-bank support */
+#define FEAT_11MV_ADC		BIT(26)
+#define FEAT_MMIO		BIT(27)	/* Chip supports MMIO */
 
 static const struct it87_devices it87_devices[] = {
 	[it87] = {
@@ -777,6 +777,7 @@ static const struct it87_devices it87_devices[] = {
 
 #define has_16bit_fans(data)	((data)->features & FEAT_16BIT_FANS)
 #define has_12mv_adc(data)	((data)->features & FEAT_12MV_ADC)
+#define has_11mv_adc(data)	((data)->features & FEAT_11MV_ADC)
 #define has_10_9mv_adc(data)	((data)->features & FEAT_10_9MV_ADC)
 #define has_newer_autopwm(data)	((data)->features & FEAT_NEWER_AUTOPWM)
 #define has_old_autopwm(data)	((data)->features & FEAT_OLD_AUTOPWM)
@@ -786,34 +787,33 @@ static const struct it87_devices it87_devices[] = {
 				(((data)->features & FEAT_TEMP_OLD_PECI) && \
 				 ((data)->old_peci_mask & BIT(nr)))
 #define has_fan16_config(data)	((data)->features & FEAT_FAN16_CONFIG)
-#define has_five_fans(data)	((data)->features & (FEAT_FIVE_FANS | \
-						     FEAT_SIX_FANS))
-#define has_vid(data)		((data)->features & FEAT_VID)
-#define has_in7_internal(data)	((data)->features & FEAT_IN7_INTERNAL)
-#define has_six_fans(data)	((data)->features & FEAT_SIX_FANS)
-#define has_avcc3(data)		((data)->features & FEAT_AVCC3)
-#define has_five_pwm(data)	((data)->features & (FEAT_FIVE_PWM \
-						     | FEAT_SIX_PWM))
-#define has_six_pwm(data)	((data)->features & FEAT_SIX_PWM)
-#define has_pwm_freq2(data)	((data)->features & FEAT_PWM_FREQ2)
-#define has_six_temp(data)	((data)->features & FEAT_SIX_TEMP)
-#define has_vin3_5v(data)	((data)->features & FEAT_VIN3_5V)
 #define has_four_fans(data)	((data)->features & (FEAT_FOUR_FANS | \
 						     FEAT_FIVE_FANS | \
 						     FEAT_SIX_FANS))
+#define has_five_fans(data)	((data)->features & (FEAT_FIVE_FANS | \
+						     FEAT_SIX_FANS))
+#define has_six_fans(data)	((data)->features & FEAT_SIX_FANS)
+#define has_vid(data)		((data)->features & FEAT_VID)
+#define has_in7_internal(data)	((data)->features & FEAT_IN7_INTERNAL)
+#define has_avcc3(data)		((data)->features & FEAT_AVCC3)
 #define has_four_pwm(data)	((data)->features & (FEAT_FOUR_PWM | \
-						     FEAT_FIVE_PWM \
-						     | FEAT_SIX_PWM))
-#define has_bank_sel(data)	((data)->features & FEAT_BANK_SEL)
+						     FEAT_FIVE_PWM | \
+						     FEAT_SIX_PWM))
+#define has_five_pwm(data)	((data)->features & (FEAT_FIVE_PWM | \
+						     FEAT_SIX_PWM))
+#define has_six_pwm(data)	((data)->features & FEAT_SIX_PWM)
+#define has_pwm_freq2(data)	((data)->features & FEAT_PWM_FREQ2)
+#define has_four_temp(data)	((data)->features & FEAT_FOUR_TEMP)
+#define has_six_temp(data)	((data)->features & FEAT_SIX_TEMP)
+#define has_vin3_5v(data)	((data)->features & FEAT_VIN3_5V)
+#define has_conf_noexit(data)	((data)->features & FEAT_CONF_NOEXIT)
 #define has_scaling(data)	((data)->features & (FEAT_12MV_ADC | \
 						     FEAT_10_9MV_ADC | \
 						     FEAT_11MV_ADC))
 #define has_fanctl_onoff(data)	((data)->features & FEAT_FANCTL_ONOFF)
-#define has_11mv_adc(data)	((data)->features & FEAT_11MV_ADC)
 #define has_new_tempmap(data)	((data)->features & FEAT_NEW_TEMPMAP)
+#define has_bank_sel(data)	((data)->features & FEAT_BANK_SEL)
 #define has_mmio(data)		((data)->features & FEAT_MMIO)
-#define has_four_temp(data)	((data)->features & FEAT_FOUR_TEMP)
-#define has_conf_noexit(data)	((data)->features & FEAT_CONF_NOEXIT)
 
 struct it87_sio_data {
 	enum chips type;
@@ -1068,7 +1068,7 @@ static int smbus_disable(struct it87_data *data)
 			return err;
 		superio_select(data->sioaddr, PME);
 		superio_outb(data->sioaddr, IT87_SPECIAL_CFG_REG,
-				data->ec_special_config & ~data->smbus_bitmap);
+			     data->ec_special_config & ~data->smbus_bitmap);
 		superio_exit(data->sioaddr, has_conf_noexit(data));
 		if (has_bank_sel(data) && !data->mmio)
 			data->saved_bank = _it87_io_read(data, IT87_REG_BANK);
@@ -1089,7 +1089,7 @@ static int smbus_enable(struct it87_data *data)
 
 		superio_select(data->sioaddr, PME);
 		superio_outb(data->sioaddr, IT87_SPECIAL_CFG_REG,
-				data->ec_special_config);
+			     data->ec_special_config);
 		superio_exit(data->sioaddr, has_conf_noexit(data));
 	}
 	return 0;
@@ -1132,7 +1132,7 @@ static int it87_io_read(struct it87_data *data, u16 reg)
 
 /*
  * Must be called with data->update_lock held, except during initialization.
- * Must be called with SMBus accesses disabled
+ * Must be called with SMBus accesses disabled.
  * We ignore the IT87 BUSY flag at this moment - it could lead to deadlocks,
  * would slow down the IT87 access and should not be necessary.
  */
@@ -1993,6 +1993,7 @@ static ssize_t set_pwm_enable(struct device *dev, struct device_attribute *attr,
 				    data->fan_main_ctrl);
 		}
 	}
+
 	it87_unlock(data);
 	return count;
 }
@@ -2586,7 +2587,7 @@ static ssize_t show_vrm_reg(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t store_vrm_reg(struct device *dev, struct device_attribute *attr,
-     			     const char *buf, size_t count)
+			     const char *buf, size_t count)
 {
 	struct it87_data *data = dev_get_drvdata(dev);
 	unsigned long val;
@@ -2651,10 +2652,10 @@ static umode_t it87_in_is_visible(struct kobject *kobj,
 {
 	struct device *dev = kobj_to_dev(kobj);
 	struct it87_data *data = dev_get_drvdata(dev);
-	int i = index / 5;  /* voltage index */
-	int a = index % 5;  /* attribute index */
+	int i = index / 5;	/* voltage index */
+	int a = index % 5;	/* attribute index */
 
-	if (index >= 40) {  /* in8 and higher only have input attributes */
+	if (index >= 40) {	/* in8 and higher only have input attributes */
 		i = index - 40 + 8;
 		a = 0;
 	}
@@ -2735,8 +2736,8 @@ static umode_t it87_temp_is_visible(struct kobject *kobj,
 {
 	struct device *dev = kobj_to_dev(kobj);
 	struct it87_data *data = dev_get_drvdata(dev);
-	int i = index / 7;  /* temperature index */
-	int a = index % 7;  /* attribute index */
+	int i = index / 7;	/* temperature index */
+	int a = index % 7;	/* attribute index */
 
 	if (!(data->has_temp & BIT(i)))
 		return 0;
@@ -3209,7 +3210,7 @@ static int __init it87_find(int sioaddr, unsigned short *address,
 	case IT87952E_DEVID:
 		sio_data->type = it87952;
 		break;
-	case 0xffff:  /* No device at all */
+	case 0xffff:	/* No device at all */
 		goto exit;
 	default:
 		pr_debug("Unsupported chip (DEVID=0x%x)\n", chip_type);
@@ -4175,19 +4176,19 @@ static int it87_probe(struct platform_device *pdev)
 	/* Starting with IT8721F, we handle scaling of internal voltages */
 	if (has_scaling(data)) {
 		if (sio_data->internal & BIT(0))
-			data->in_scaled |= BIT(3);  /* in3 is AVCC */
+			data->in_scaled |= BIT(3);	/* in3 is AVCC */
 		if (sio_data->internal & BIT(1))
-			data->in_scaled |= BIT(7);  /* in7 is VSB */
+			data->in_scaled |= BIT(7);	/* in7 is VSB */
 		if (sio_data->internal & BIT(2))
-			data->in_scaled |= BIT(8);  /* in8 is Vbat */
+			data->in_scaled |= BIT(8);	/* in8 is Vbat */
 		if (sio_data->internal & BIT(3))
-			data->in_scaled |= BIT(9);  /* in9 is AVCC */
+			data->in_scaled |= BIT(9);	/* in9 is AVCC */
 	} else if (sio_data->type == it8781 || sio_data->type == it8782 ||
 		   sio_data->type == it8783) {
 		if (sio_data->internal & BIT(0))
-			data->in_scaled |= BIT(3);  /* in3 is VCC5V */
+			data->in_scaled |= BIT(3);	/* in3 is VCC5V */
 		if (sio_data->internal & BIT(1))
-			data->in_scaled |= BIT(7);  /* in7 is VCCH5V */
+			data->in_scaled |= BIT(7);	/* in7 is VCCH5V */
 	}
 
 	data->has_temp = 0x07;
@@ -4415,7 +4416,7 @@ static int it87_dmi_cb(const struct dmi_system_id *dmi_entry)
  * DMI entries for those systems will be added as they become available and
  * as the problem is confirmed to affect those boards.
  */
-static int it87_sio2_force(const struct dmi_system_id *dmi_entry)
+static int it87_sio_force(const struct dmi_system_id *dmi_entry)
 {
 	__superio_enter(REG_4E);
 
@@ -4450,7 +4451,7 @@ static struct it87_dmi_data it87_acpi_ignore = {
 };
 
 #define IT87_DMI_MATCH_VND(vendor, name, cb, data) \
-        { \
+	{ \
 		.callback = cb, \
 		.matches = { \
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, vendor), \
@@ -4466,22 +4467,22 @@ static const struct dmi_system_id it87_dmi_table[] __initconst = {
 	IT87_DMI_MATCH_GBT("A320M-S2H V2-CF", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8686E */
-	IT87_DMI_MATCH_GBT("AB350", it87_sio2_force, NULL),
+	IT87_DMI_MATCH_GBT("AB350", it87_sio_force, NULL),
 		/* ? + IT8792E/IT8795E */
-	IT87_DMI_MATCH_GBT("AX370", it87_sio2_force, NULL),
+	IT87_DMI_MATCH_GBT("AX370", it87_sio_force, NULL),
 		/* ? + IT8792E/IT8795E */
-	IT87_DMI_MATCH_GBT("Z97X-Gaming G1", it87_sio2_force, NULL),
+	IT87_DMI_MATCH_GBT("Z97X-Gaming G1", it87_sio_force, NULL),
 		/* ? + IT8790E */
-	IT87_DMI_MATCH_GBT("TRX40 AORUS XTREME", it87_sio2_force,
+	IT87_DMI_MATCH_GBT("TRX40 AORUS XTREME", it87_sio_force,
 			   &it87_acpi_ignore),
 		/* IT8688E + IT8792E/IT8795E */
-	IT87_DMI_MATCH_GBT("Z390 AORUS ULTRA-CF", it87_sio2_force,
+	IT87_DMI_MATCH_GBT("Z390 AORUS ULTRA-CF", it87_sio_force,
 			   &it87_acpi_ignore),
 		/* IT8688E + IT8792E/IT8795E */
 	IT87_DMI_MATCH_GBT("Z490 AORUS ELITE AC", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8688E */
-	IT87_DMI_MATCH_GBT("B550 AORUS PRO AC", it87_sio2_force,
+	IT87_DMI_MATCH_GBT("B550 AORUS PRO AC", it87_sio_force,
 			   &it87_acpi_ignore),
 		/* IT8688E + IT8792E/IT8795E */
 	IT87_DMI_MATCH_GBT("B560I AORUS PRO AX", it87_dmi_cb,
@@ -4490,28 +4491,28 @@ static const struct dmi_system_id it87_dmi_table[] __initconst = {
 	IT87_DMI_MATCH_GBT("X570 AORUS ELITE WIFI", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8688E */
-	IT87_DMI_MATCH_GBT("X570 AORUS MASTER", it87_sio2_force,
+	IT87_DMI_MATCH_GBT("X570 AORUS MASTER", it87_sio_force,
 			   &it87_acpi_ignore),
 		/* IT8688E + IT8792E/IT8795E */
-	IT87_DMI_MATCH_GBT("X570 AORUS PRO", it87_sio2_force,
+	IT87_DMI_MATCH_GBT("X570 AORUS PRO", it87_sio_force,
 			   &it87_acpi_ignore),
 		/* IT8688E + IT8792E/IT8795E */
-	IT87_DMI_MATCH_GBT("X570 AORUS PRO WIFI", it87_sio2_force,
+	IT87_DMI_MATCH_GBT("X570 AORUS PRO WIFI", it87_sio_force,
 			   &it87_acpi_ignore),
 		/* IT8688E + IT8792E/IT8795E */
 	IT87_DMI_MATCH_GBT("X570 I AORUS PRO WIFI", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8688E */
-	IT87_DMI_MATCH_GBT("X570S AERO G", it87_sio2_force,
+	IT87_DMI_MATCH_GBT("X570S AERO G", it87_sio_force,
 			   &it87_acpi_ignore),
 		/* IT8689E + IT87952E */
 	IT87_DMI_MATCH_GBT("X670E AORUS MASTER", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8689E - Note there may also be a second chip */
-	IT87_DMI_MATCH_GBT("Z690 AORUS PRO DDR4", it87_sio2_force,
+	IT87_DMI_MATCH_GBT("Z690 AORUS PRO DDR4", it87_sio_force,
 			   &it87_acpi_ignore),
 		/* IT8689E + IT87952E */
-	IT87_DMI_MATCH_GBT("Z690 AORUS PRO", it87_sio2_force,
+	IT87_DMI_MATCH_GBT("Z690 AORUS PRO", it87_sio_force,
 			   &it87_acpi_ignore),
 		/* IT8689E + IT87952E */
 	IT87_DMI_MATCH_VND("nVIDIA", "FN68PT", it87_dmi_cb, &nvidia_fn68pt),

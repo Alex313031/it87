@@ -656,8 +656,7 @@ static const struct it87_devices it87_devices[] = {
 		.features = FEAT_NEWER_AUTOPWM | FEAT_12MV_ADC | FEAT_16BIT_FANS
 		  | FEAT_TEMP_PECI | FEAT_SIX_FANS
 		  | FEAT_IN7_INTERNAL | FEAT_SIX_PWM | FEAT_PWM_FREQ2
-		  | FEAT_SIX_TEMP | FEAT_VIN3_5V
-		  | FEAT_FANCTL_ONOFF,
+		  | FEAT_SIX_TEMP | FEAT_VIN3_5V | FEAT_FANCTL_ONOFF,
 		.num_temp_limit = 3,
 		.num_temp_offset = 3,
 		.num_temp_map = 3,
@@ -1703,12 +1702,12 @@ static SENSOR_DEVICE_ATTR(temp6_type, S_IRUGO | S_IWUSR, show_temp_type,
 static int pwm_mode(const struct it87_data *data, int nr)
 {
 	if (has_fanctl_onoff(data) && nr < 3 &&
-			!(data->fan_main_ctrl & BIT(nr)))
-		return 0;				/* Full speed */
+	    !(data->fan_main_ctrl & BIT(nr)))
+		return 0;			/* Full speed */
 	if (data->pwm_ctrl[nr] & 0x80)
-		return 2;				/* Automatic mode */
+		return 2;			/* Automatic mode */
 	if ((!has_fanctl_onoff(data) || nr >= 3) &&
-			data->pwm_duty[nr] == pwm_to_reg(data, 0xff))
+	    data->pwm_duty[nr] == pwm_to_reg(data, 0xff))
 		return 0;			/* Full speed */
 
 	return 1;				/* Manual mode */
@@ -4471,6 +4470,9 @@ static const struct dmi_system_id it87_dmi_table[] __initconst = {
 		/* ? + IT8792E/IT8795E */
 	IT87_DMI_MATCH_GBT("AX370", it87_sio_force, NULL),
 		/* ? + IT8792E/IT8795E */
+	IT87_DMI_MATCH_GBT("A520I AC", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT8688E */
 	IT87_DMI_MATCH_GBT("Z97X-Gaming G1", it87_sio_force, NULL),
 		/* ? + IT8790E */
 	IT87_DMI_MATCH_GBT("TRX40 AORUS XTREME", it87_sio_force,

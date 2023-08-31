@@ -1619,13 +1619,11 @@ static ssize_t show_temp_type(struct device *dev, struct device_attribute *attr,
 {
 	struct sensor_device_attribute *sensor_attr = to_sensor_dev_attr(attr);
 	struct it87_data *data = it87_update_device(dev);
-	int type;
 
 	if (IS_ERR(data))
 		return PTR_ERR(data);
 
-	type = get_temp_type(data, sensor_attr->index);
-	return sprintf(buf, "%d\n", type);
+	return sprintf(buf, "%d\n", get_temp_type(data, sensor_attr->index));
 }
 
 static ssize_t set_temp_type(struct device *dev, struct device_attribute *attr,
@@ -2745,9 +2743,7 @@ static umode_t it87_temp_is_visible(struct kobject *kobj,
 		return 0;
 
 	if (a == 3) {
-		int type = get_temp_type(data, i);
-
-		if (type == 0)
+		if (get_temp_type(data, i) == 0)
 			return 0;
 		if (has_bank_sel(data))
 			return 0444;

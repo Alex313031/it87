@@ -381,7 +381,7 @@ struct it87_devices {
  * second SIO address. Never exit configuration mode on these
  * chips to avoid the problem.
  */
-#define FEAT_CONF_PREOPEN	BIT(19)	/* Chip conf mode enabled by BIOS */
+#define FEAT_NOCONF		BIT(19)	/* Chip conf mode enabled on startup */
 #define FEAT_FOUR_FANS		BIT(20)	/* Supports four fans */
 #define FEAT_FOUR_PWM		BIT(21)	/* Supports four fan controls */
 #define FEAT_FOUR_TEMP		BIT(22)
@@ -587,7 +587,7 @@ static const struct it87_devices it87_devices[] = {
 		.features = FEAT_NEWER_AUTOPWM | FEAT_10_9MV_ADC
 		  | FEAT_16BIT_FANS | FEAT_TEMP_PECI
 		  | FEAT_IN7_INTERNAL | FEAT_PWM_FREQ2 | FEAT_FANCTL_ONOFF
-		  | FEAT_CONF_PREOPEN,
+		  | FEAT_NOCONF,
 		.num_temp_limit = 3,
 		.num_temp_offset = 3,
 		.num_temp_map = 3,
@@ -599,7 +599,7 @@ static const struct it87_devices it87_devices[] = {
 		.features = FEAT_NEWER_AUTOPWM | FEAT_11MV_ADC
 		  | FEAT_16BIT_FANS | FEAT_TEMP_PECI
 		  | FEAT_IN7_INTERNAL | FEAT_PWM_FREQ2 | FEAT_FANCTL_ONOFF
-		  | FEAT_CONF_PREOPEN,
+		  | FEAT_NOCONF,
 		.num_temp_limit = 3,
 		.num_temp_offset = 3,
 		.num_temp_map = 3,
@@ -767,7 +767,7 @@ static const struct it87_devices it87_devices[] = {
 		.features = FEAT_NEWER_AUTOPWM | FEAT_11MV_ADC
 		  | FEAT_16BIT_FANS | FEAT_TEMP_PECI
 		  | FEAT_IN7_INTERNAL | FEAT_PWM_FREQ2 | FEAT_FANCTL_ONOFF
-		  | FEAT_CONF_PREOPEN,
+		  | FEAT_NOCONF,
 		.num_temp_limit = 3,
 		.num_temp_offset = 3,
 		.num_temp_map = 3,
@@ -806,7 +806,7 @@ static const struct it87_devices it87_devices[] = {
 #define has_four_temp(data)	((data)->features & FEAT_FOUR_TEMP)
 #define has_six_temp(data)	((data)->features & FEAT_SIX_TEMP)
 #define has_vin3_5v(data)	((data)->features & FEAT_VIN3_5V)
-#define has_conf_preopen(data)	((data)->features & FEAT_CONF_PREOPEN)
+#define has_noconf(data)	((data)->features & FEAT_NOCONF)
 #define has_scaling(data)	((data)->features & (FEAT_12MV_ADC | \
 						     FEAT_10_9MV_ADC | \
 						     FEAT_11MV_ADC))
@@ -1063,13 +1063,13 @@ static int smbus_disable(struct it87_data *data)
 	int err;
 
 	if (data->smbus_bitmap) {
-		err = superio_enter(data->sioaddr, has_conf_preopen(data));
+		err = superio_enter(data->sioaddr, has_noconf(data));
 		if (err)
 			return err;
 		superio_select(data->sioaddr, PME);
 		superio_outb(data->sioaddr, IT87_SPECIAL_CFG_REG,
 			     data->ec_special_config & ~data->smbus_bitmap);
-		superio_exit(data->sioaddr, has_conf_preopen(data));
+		superio_exit(data->sioaddr, has_noconf(data));
 		if (has_bank_sel(data) && !data->mmio)
 			data->saved_bank = _it87_io_read(data, IT87_REG_BANK);
 	}
@@ -1083,14 +1083,14 @@ static int smbus_enable(struct it87_data *data)
 	if (data->smbus_bitmap) {
 		if (has_bank_sel(data) && !data->mmio)
 			_it87_io_write(data, IT87_REG_BANK, data->saved_bank);
-		err = superio_enter(data->sioaddr, has_conf_preopen(data));
+		err = superio_enter(data->sioaddr, has_noconf(data));
 		if (err)
 			return err;
 
 		superio_select(data->sioaddr, PME);
 		superio_outb(data->sioaddr, IT87_SPECIAL_CFG_REG,
 			     data->ec_special_config);
-		superio_exit(data->sioaddr, has_conf_preopen(data));
+		superio_exit(data->sioaddr, has_noconf(data));
 	}
 	return 0;
 }
@@ -3091,8 +3091,8 @@ static const struct attribute_group it87_group_auto_pwm = {
  *
  * From other information supplied:
  * ChipIDs 0x8733, 0x8695 (early ID for IT87952E) and 0x8790 are intialised
- * by the BIOS and left in configuration mode, and entering and/or exiting
- * configuration mode is what causes the crash.
+ * and left in configuration mode, and entering and/or exiting configuration
+ * mode is what causes the crash.
  *
  * The recommendation is to look up the chipID before doing any mode swap
  * and then act accordingly.
@@ -3108,7 +3108,7 @@ static int __init it87_find(int sioaddr, unsigned short *address,
 	char mmio_str[32];
 	u16 chip_type;
 	int err;
-	bool opened = false;
+	bool enabled = false;
 
 	/* First step, lock memory but don't enter configuration mode */
 	err = superio_enter(sioaddr, true);
@@ -3119,11 +3119,11 @@ static int __init it87_find(int sioaddr, unsigned short *address,
 
 	err = -ENODEV;
 	chip_type = superio_inw(sioaddr, DEVID);
-	/* Check first for a valid chip before forcing chip id */
+	/* Check for a valid chip before forcing chip id */
 	if (chip_type == 0xffff) {
 		/* Enter configuration mode */
 		__superio_enter(sioaddr);
-		opened = true;
+		enabled = true;
 		/* and then try again */
 		chip_type = superio_inw(sioaddr, DEVID);
 		if (chip_type == 0xffff)
@@ -3247,14 +3247,14 @@ static int __init it87_find(int sioaddr, unsigned short *address,
 
 	/*
 	 * If previously we didn't enter configuration mode and it isn't a
-	 * chip we know is initialised by the BIOS, then enter configuration
-	 * mode.
+	 * chip we know is initialised in configuration mode, then enter
+	 * configuration mode.
 	 *
 	 * I don't know if any such chips can exist but be defensive.
 	 */
-	if (!opened && !has_conf_preopen(config)) {
+	if (!enabled && !has_noconf(config)) {
 		__superio_enter(sioaddr);
-		opened = true;
+		enabled = true;
 	}
 
 	superio_select(sioaddr, PME);
@@ -3796,7 +3796,7 @@ static int __init it87_find(int sioaddr, unsigned short *address,
 	}
 
 exit:
-	superio_exit(sioaddr, opened && config && has_conf_preopen(config));
+	superio_exit(sioaddr, !enabled);
 	return err;
 }
 
@@ -4310,7 +4310,7 @@ static void it87_resume_sio(struct platform_device *pdev)
 	if (!data->need_in7_reroute)
 		return;
 
-	err = superio_enter(data->sioaddr, has_conf_preopen(data));
+	err = superio_enter(data->sioaddr, has_noconf(data));
 	if (err) {
 		dev_warn(&pdev->dev,
 			 "Unable to enter Super I/O to reroute in7 (%d)",
@@ -4330,7 +4330,7 @@ static void it87_resume_sio(struct platform_device *pdev)
 			     reg2c);
 	}
 
-	superio_exit(data->sioaddr, has_conf_preopen(data));
+	superio_exit(data->sioaddr, has_noconf(data));
 }
 
 static int it87_resume(struct device *dev)

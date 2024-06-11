@@ -3950,7 +3950,7 @@ static void it87_start_monitoring(struct it87_data *data)
 		    (data->read(data, IT87_REG_CONFIG) & 0x3e)
 		    | (update_vbat ? 0x41 : 0x01));
 }
-	
+
 /* Called when we have found a new IT87. */
 static void it87_init_device(struct platform_device *pdev)
 {
@@ -4499,6 +4499,9 @@ static const struct dmi_system_id it87_dmi_table[] __initconst = {
 	IT87_DMI_MATCH_GBT("Z390 AORUS ULTRA-CF", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8688E + IT8792E/IT8795E */
+	IT87_DMI_MATCH_GBT("B450 AORUS PRO-CF", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT8686E + IT8792E/IT8795E */
 	IT87_DMI_MATCH_GBT("Z490 AORUS ELITE AC", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8688E */
@@ -4508,6 +4511,9 @@ static const struct dmi_system_id it87_dmi_table[] __initconst = {
 	IT87_DMI_MATCH_GBT("B560I AORUS PRO AX", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8689E */
+	IT87_DMI_MATCH_GBT("X570 AORUS ELITE", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT8688E */
 	IT87_DMI_MATCH_GBT("X570 AORUS ELITE WIFI", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8688E */
@@ -4527,6 +4533,9 @@ static const struct dmi_system_id it87_dmi_table[] __initconst = {
 			   &it87_acpi_ignore),
 		/* IT8688E */
 	IT87_DMI_MATCH_GBT("X570S AERO G", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT8689E */
+	IT87_DMI_MATCH_GBT("B650M GAMING X AX", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8689E */
 	IT87_DMI_MATCH_GBT("X670 AORUS ELITE AX", it87_dmi_cb,

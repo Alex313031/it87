@@ -29,7 +29,7 @@ endif
 
 DRIVER := it87
 ifneq ("","$(wildcard .git/*)")
-DRIVER_VERSION := $(shell git describe --long).$(shell date -d "$(git show -s --format=%ci HEAD)" +%Y%m%d)
+DRIVER_VERSION := $(shell git describe --long).$(shell date -u -d "$$(git show -s --format=%ci HEAD)" +%Y%m%d)
 else
 ifneq ("", "$(wildcard VERSION)")
 DRIVER_VERSION := $(shell cat VERSION)

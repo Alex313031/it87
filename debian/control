@@ -2,9 +2,9 @@ Source: it87-dkms
 Section: misc
 Priority: optional
 Maintainer: Frank Crawford <frank@crawford.emu.id.au>
-Build-Depends: debhelper (>= 9), dkms
+Build-Depends: debhelper-compat (= 13), dh-sequence-dkms
 
 Package: it87-dkms
 Architecture: linux-any
-Depends: ${misc:Depends}, dkms
+Depends: ${misc:Depends}
 Description: it87

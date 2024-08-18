@@ -4544,6 +4544,9 @@ static const struct dmi_system_id it87_dmi_table[] __initconst = {
 	IT87_DMI_MATCH_GBT("X670E AORUS MASTER", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8689E + IT87922E */
+	IT87_DMI_MATCH_GBT("H610M H DDR4", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT8689E */
 	IT87_DMI_MATCH_GBT("Z690 AORUS PRO DDR4", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8689E + IT87952E */

@@ -1,3 +1,51 @@
+SUPPORT NOTE - Sep 2024
+============
+
+Non-Gigabyte Boards
+-------------------
+
+Just a note that it looks like some of these chips are now being
+found in other vendor's motherboards.
+
+Most of the testing I am doing is on Gigabyte boards, so other
+vendor's board may show some differences which are not directly
+related to the chip.
+
+I will attempt to support other boards, but cannot promise anything.
+
+
+New Gigabyte Fan Control Chip
+-----------------------------
+
+Also, it appears that Gigabyte have introduced a separate chip in
+some boards which control the fan speed, and as such the while you
+can measure the speed, you cannot change it.  This is something it
+am tracking, but am yet to find a solution.
+
+
+Additional Support Information Requested
+----------------------------------------
+
+Related to this, please provide the Linux distribution, the Linux
+kernel version and the details from:
+
+cat /sys/class/dmi/id/board_vendor
+cat /sys/class/dmi/id/board_name
+
+
+Technical Documentation
+-----------------------
+
+As a final note, no one has been able to obtain any technical
+documentation on these chipsets for a long time.
+
+If you do have any contacts with Gigabyte or ITE who can assist
+in obtaining documentation, please see what you can do, or let
+me know and I'll follow it up.
+
+Frank Crawford
+Sep 2024
+
 CURRENT DEVICE STATUS - Sep 2022
 =====================
 

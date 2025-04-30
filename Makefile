@@ -84,7 +84,7 @@ ifeq ($(COMPRESS_GZIP), y)
 	@gzip -f $(MODDESTDIR)/$(DRIVER).ko
 endif
 ifeq ($(COMPRESS_XZ), y)
-	@xz -f $(MODDESTDIR)/$(DRIVER).ko
+	@xz -f -C crc32 $(MODDESTDIR)/$(DRIVER).ko
 endif
 	depmod -a -F $(SYSTEM_MAP) $(TARGET)
 

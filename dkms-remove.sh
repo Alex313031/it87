@@ -8,7 +8,7 @@ else
 fi
 
 DRV_NAME="$(basename $(pwd))"
-DRV_VERSION=$(dkms status ${DRV_NAME} -k $(uname -r) | cut -d, -f1 | cut -d/ -f2)
+DRV_VERSION=$(dkms status -m ${DRV_NAME} -k $(uname -r) | cut -d, -f1 | cut -d/ -f2)
 
 make -f Makefile DRIVER=$DRV_NAME DRIVER_VERSION=$DRV_VERSION dkms_clean
 

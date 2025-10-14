@@ -3464,7 +3464,7 @@ static int __init it87_find(int sioaddr, unsigned short *address,
 
 		/* Check for pwm3, fan3, pwm5, fan5 */
 		reg27 = superio_inb(sioaddr, IT87_SIO_GPIO3_REG);
-		if (reg27 & BIT(1))
+		if (!(reg27 & BIT(1)))
 			sio_data->skip_fan |= BIT(4);
 		if (reg27 & BIT(3))
 			sio_data->skip_pwm |= BIT(4);
@@ -4585,6 +4585,9 @@ static const struct dmi_system_id it87_dmi_table[] __initconst = {
 	IT87_DMI_MATCH_GBT("B650M GAMING X AX", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8689E */
+	IT87_DMI_MATCH_GBT("B660M DS3H DDR4", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT8689E */
 	IT87_DMI_MATCH_GBT("X670 AORUS ELITE AX", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8689E + IT87952E */
@@ -4609,14 +4612,27 @@ static const struct dmi_system_id it87_dmi_table[] __initconst = {
 	IT87_DMI_MATCH_GBT("Z790 AORUS MASTER", it87_dmi_cb,
 			   &it87_acpi_ignore),
 		/* IT8689E + IT87952E */
-	IT87_DMI_MATCH_GBT("X870I AORUS PRO ICE", it87_dmi_cb, &it87_acpi_ignore),
+	IT87_DMI_MATCH_GBT("X870I AORUS PRO ICE", it87_dmi_cb,
+			   &it87_acpi_ignore),
 		/* IT8696E */
-	IT87_DMI_MATCH_GBT("X870 AORUS ELITE WIFI7", it87_dmi_cb, &it87_acpi_ignore),
-		/* IT87952E + IT8696E*/
-	IT87_DMI_MATCH_GBT("X870 AORUS ELITE WIFI7 ICE", it87_dmi_cb, &it87_acpi_ignore),
-		/* IT8696E*/
-	IT87_DMI_MATCH_GBT("X870 GAMING WIFI6", it87_dmi_cb, &it87_acpi_ignore),
-		/* IT8696E*/
+	IT87_DMI_MATCH_GBT("X870 AORUS ELITE WIFI7", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT87952E + IT8696E */
+	IT87_DMI_MATCH_GBT("X870 AORUS ELITE WIFI7 ICE", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT8696E */
+	IT87_DMI_MATCH_GBT("X870 GAMING WIFI6", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT8696E */
+	IT87_DMI_MATCH_GBT("X870E AORUS MASTER", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT8696E */
+	IT87_DMI_MATCH_GBT("X870 EAGLE WIFI7", it87_dmi_cb,
+			   &it87_acpi_ignore),
+		/* IT8696E */
+	IT87_DMI_MATCH_VND("ASUSTeK COMPUTER INC.", "PRIME B350-PLUS",
+			   it87_dmi_cb, NULL),
+		/* IT8655E */
 	IT87_DMI_MATCH_VND("nVIDIA", "FN68PT", it87_dmi_cb, &nvidia_fn68pt),
 	{ }
 };
